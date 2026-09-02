@@ -1,3 +1,10 @@
+
 /venv
 . evn
 __pycache__/
+.idea/
+.venv
+.DS_Store
+*.iml
+work 1.py
+
