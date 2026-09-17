@@ -1,30 +1,36 @@
-import sqlite3
+CREATE_PRODUCTS_TABLE = """
+CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price NUMERIC NOT NULL,
+    category_id INTEGER NOT NULL
+);
+"""
 
-DB_NAME = "database/database.db"
+CREATE_CATEGORIES_TABLE = """
+CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+);
+"""
 
+INSERT_CATEGORY = """
+INSERT INTO categories (name)
+VALUES (?);
+"""
 
-def add_user(name: str, age: int, gender: str):
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
+INSERT_PRODUCT = """
+INSERT INTO products (name, price, category_id)
+VALUES (?, ?, ?);
+"""
 
-    cursor.execute(
-        """
-        INSERT INTO users (name, age, gender)
-        VALUES (?, ?, ?)
-        """,
-        (name, age, gender)
-    )
-
-    conn.commit()
-    conn.close()
-
-
-def get_all_users():
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT id, name, age, gender FROM users")
-    users = cursor.fetchall()
-
-    conn.close()
-    return users
+SELECT_PRODUCTS_WITH_CATEGORIES = """
+SELECT
+    products.id,
+    products.name,
+    products.price,
+    categories.name AS category
+FROM products
+INNER JOIN categories
+    ON products.category_id = categories.id;
+"""

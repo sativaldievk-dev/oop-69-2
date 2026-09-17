@@ -1,4 +1,18 @@
+
+/venv
+. evn
+__pycache__/
+.idea/
+.venv
+.DS_Store
+*.iml
+work 1.py
+
+venv/
 .env
+bot.db
 __pycache__/
 *.pyc
-database/database.db
+config.py
+
+
