@@ -1,21 +1,54 @@
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.filters import Command
-from aiogram.types import Message, CallbackQuery
-from keyboards.main_buttons import main_buttons, about_keyboard
+from aiogram.types import Message
 
-router=Router()
+from database.database import get_products
+
+router = Router()
+
 
 @router.message(Command("start"))
-async def start(message:Message):
-    await message.answer("☕ Добро пожаловать в кафе!\nНажми /menu.",reply_markup=main_buttons)
-
-@router.message(Command("menu"))
-async def menu(message:Message):
+async def start(message: Message):
     await message.answer(
-        "📋 Команды:\n/start — запуск\n/menu — меню\n/add_product — добавить товар\n/drinks — товары",
-        reply_markup=about_keyboard)
+        "Привет! 👋\n\n"
+        "Команды:\n"
+        "/add_product — добавить товар\n"
+        "/products — показать товары\n"
+        "/drinks — показать товары\n"
+        "/cancel — отменить добавление"
+    )
 
-@router.callback_query(F.data=="about")
-async def about(callback:CallbackQuery):
-    await callback.answer()
-    await callback.message.answer("ℹ️ О нас\n\nМы — уютное кафе с вкусными напитками.")
+
+@router.message(Command("products"))
+async def products(message: Message):
+    rows = get_products()
+
+    if not rows:
+        await message.answer("Товаров пока нет.")
+        return
+
+    for product_id, name, price, photo_id, category_name in rows:
+        caption = (
+            f"🛍 <b>{name}</b>\n"
+            f"💰 Цена: {price} сом\n"
+            f"📂 Категория: {category_name}\n"
+            f"🆔 ID: {product_id}"
+        )
+
+        if photo_id:
+            await message.answer_photo(
+                photo=photo_id,
+                caption=caption,
+                parse_mode="HTML"
+            )
+        else:
+            await message.answer(
+                caption,
+                parse_mode="HTML"
+            )
+
+
+@router.message(Command("drinks"))
+async def drinks(message: Message):
+    # Та же выборка через INNER JOIN, как требует ДЗ.
+    await products(message)

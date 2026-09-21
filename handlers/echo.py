@@ -1,7 +1,11 @@
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.types import Message
-router=Router()
 
-@router.message(F.text)
-async def echo(message:Message):
-    await message.answer("До встречи!")
+router = Router()
+
+
+@router.message()
+async def echo(message: Message):
+    await message.answer(
+        "Не понял команду. Используйте /start"
+    )

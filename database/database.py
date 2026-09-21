@@ -1,21 +1,70 @@
-import aiosqlite
-DB_NAME="products.db"
+import sqlite3
 
-async def create_db():
-    async with aiosqlite.connect(DB_NAME) as db:
-        await db.execute("""CREATE TABLE IF NOT EXISTS products (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            price INTEGER NOT NULL
-        )""")
-        await db.commit()
+from database.queries import (
+    CREATE_CATEGORIES_TABLE,
+    CREATE_PRODUCTS_TABLE,
+    INSERT_CATEGORY,
+    INSERT_PRODUCT,
+    SELECT_CATEGORY_ID,
+    SELECT_PRODUCTS_WITH_CATEGORIES,
+)
 
-async def add_product(name, price):
-    async with aiosqlite.connect(DB_NAME) as db:
-        await db.execute("INSERT INTO products (name,price) VALUES (?,?)",(name,price))
-        await db.commit()
+DB_NAME = "bot.db"
 
-async def get_products():
-    async with aiosqlite.connect(DB_NAME) as db:
-        cur=await db.execute("SELECT name,price FROM products ORDER BY id")
-        return await cur.fetchall()
+
+def get_connection():
+    conn = sqlite3.connect(DB_NAME)
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
+
+
+def create_tables():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(CREATE_CATEGORIES_TABLE)
+    cursor.execute(CREATE_PRODUCTS_TABLE)
+
+    conn.commit()
+    conn.close()
+
+
+def get_or_create_category(category_name: str) -> int:
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(INSERT_CATEGORY, (category_name,))
+    cursor.execute(SELECT_CATEGORY_ID, (category_name,))
+    row = cursor.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    if row is None:
+        raise RuntimeError("Не удалось получить ID категории")
+
+    return row[0]
+
+
+def add_product(name: str, price: int, category_id: int, photo_id: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        INSERT_PRODUCT,
+        (name, price, category_id, photo_id)
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def get_products():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(SELECT_PRODUCTS_WITH_CATEGORIES)
+    products = cursor.fetchall()
+
+    conn.close()
+    return products
