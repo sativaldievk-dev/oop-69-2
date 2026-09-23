@@ -4,6 +4,7 @@ from database.queries import (
     CREATE_PRODUCTS_TABLE,
     CREATE_CATEGORIES_TABLE,
     INSERT_CATEGORY,
+    SELECT_CATEGORY_ID,
     INSERT_PRODUCT,
     SELECT_PRODUCTS_WITH_CATEGORIES,
     DELETE_PRODUCT,
@@ -19,29 +20,58 @@ def create_tables():
 
 def add_category(name):
     with sqlite3.connect("bot.db") as db:
-        cursor = db.execute(INSERT_CATEGORY, (name,))
+        db.execute(INSERT_CATEGORY, (name,))
         db.commit()
-        return cursor.lastrowid
 
 
-def add_product(name, price, category_id):
+def get_category_id(name):
+    with sqlite3.connect("bot.db") as db:
+        cursor = db.execute(
+            SELECT_CATEGORY_ID,
+            (name,)
+        )
+
+        result = cursor.fetchone()
+
+        if result:
+            return result[0]
+
+        return None
+
+
+def add_product(name, price, category_id, photo_id=None):
     with sqlite3.connect("bot.db") as db:
         cursor = db.execute(
             INSERT_PRODUCT,
-            (name, price, category_id)
+            (
+                name,
+                price,
+                category_id,
+                photo_id,
+            )
         )
+
         db.commit()
+
         return cursor.lastrowid
 
 
 def get_products_with_categories():
     with sqlite3.connect("bot.db") as db:
-        cursor = db.execute(SELECT_PRODUCTS_WITH_CATEGORIES)
+        cursor = db.execute(
+            SELECT_PRODUCTS_WITH_CATEGORIES
+        )
+
         return cursor.fetchall()
 
 
 def delete_product(product_id):
     with sqlite3.connect("bot.db") as db:
-        cursor = db.execute(DELETE_PRODUCT, (product_id,))
+        cursor = db.execute(
+            DELETE_PRODUCT,
+            (product_id,)
+        )
+
         db.commit()
+
         return cursor.rowcount
