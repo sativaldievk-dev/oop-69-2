@@ -15,7 +15,8 @@ async def start(message: Message):
         "/add_product — добавить товар\n"
         "/products — показать товары\n"
         "/drinks — показать товары\n"
-        "/cancel — отменить добавление"
+        "/cancel — отменить добавление\n"
+        "/delete ID — удалить товар\n"
     )
 
 

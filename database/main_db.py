@@ -8,8 +8,8 @@ from database.queries import (
     INSERT_PRODUCT,
     SELECT_PRODUCTS_WITH_CATEGORIES,
     DELETE_PRODUCT,
+    DELETE_CATEGORY,
 )
-
 
 def create_tables():
     with sqlite3.connect("bot.db") as db:
@@ -64,12 +64,28 @@ def get_products_with_categories():
 
         return cursor.fetchall()
 
-
 def delete_product(product_id):
     with sqlite3.connect("bot.db") as db:
         cursor = db.execute(
+            "SELECT category_id FROM products WHERE id = ?",
+            (product_id,)
+        )
+
+        result = cursor.fetchone()
+
+        if result is None:
+            return 0
+
+        category_id = result[0]
+
+        cursor = db.execute(
             DELETE_PRODUCT,
             (product_id,)
+        )
+
+        db.execute(
+            DELETE_CATEGORY,
+            (category_id,)
         )
 
         db.commit()

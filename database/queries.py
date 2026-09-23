@@ -48,3 +48,7 @@ DELETE_PRODUCT = """
 DELETE FROM products
 WHERE id = ?
 """
+DELETE_CATEGORY = """
+DELETE FROM categories
+WHERE id = ?
+"""

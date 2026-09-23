@@ -9,3 +9,18 @@ main_buttons=ReplyKeyboardMarkup(
 about_keyboard=InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text="ℹ️ О нас",callback_data="about")]]
 )
+def confirm_delete_keyboard():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ Да, удалить",
+                    callback_data="delete_confirm"
+                ),
+                InlineKeyboardButton(
+                    text="❌ Отмена",
+                    callback_data="delete_cancel"
+                )
+            ]
+        ]
+    )
