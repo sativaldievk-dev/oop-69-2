@@ -43,3 +43,8 @@ INNER JOIN categories
     ON products.category_id = categories.id
 ORDER BY products.id DESC
 """
+
+DELETE_PRODUCT = """
+DELETE FROM products
+WHERE id = ?
+"""
