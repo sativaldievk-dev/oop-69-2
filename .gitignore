@@ -7,3 +7,16 @@ __pycache__/
 .DS_Store
 *.iml
 work 1.py
+venv/
+__pycache__/
+*.pyc
+.env
+*.db
+*.sqlite3
+book_bot/
+book_catalog_bot/
+book_catalog_bot_backup/
+database/
+handlers/
+keyboards/
+states/
