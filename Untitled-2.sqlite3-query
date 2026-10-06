@@ -1,3 +1,0 @@
--- database: /Users/khaiatillo/проект/bot.db
-
-SELECT * FROM categories;

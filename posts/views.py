@@ -1,18 +1,17 @@
-from django.http import HttpResponse
+from django.views.generic import ListView, DetailView
 from .models import Post
 
 
-def post_list(request):
-    posts = Post.objects.all()
+class PostListView(ListView):
+    model = Post
+    template_name = "posts/post_list.html"
+    context_object_name = "posts"
 
-    result = ""
+    def get_queryset(self):
+        return Post.objects.filter(is_active=True)
 
-    for post in posts:
-        result += f"""
-        <h1>{post.title}</h1>
-        <p>{post.description}</p>
-        <p>Активен: {post.is_active}</p>
-        <hr>
-        """
 
-    return HttpResponse(result)
+class PostDetailView(DetailView):
+    model = Post
+    template_name = "posts/post_detail.html"
+    context_object_name = "post"

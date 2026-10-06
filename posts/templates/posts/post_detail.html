@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ post.title }}</title>
+</head>
+<body>
+
+<h1>{{ post.title }}</h1>
+
+<p>{{ post.description }}</p>
+
+<p>Активен: {{ post.is_active }}</p>
+
+<a href="{% url 'post_list' %}">← Назад</a>
+
+</body>
+</html>
