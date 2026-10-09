@@ -1,18 +1,19 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ post.title }}</title>
-</head>
-<body>
-
 <h1>{{ post.title }}</h1>
 
 <p>{{ post.description }}</p>
 
-<p>Активен: {{ post.is_active }}</p>
+{% if post.is_active %}
+    <p>Статус: Active</p>
+{% else %}
+    <p>Статус: Inactive</p>
+{% endif %}
 
-<a href="{% url 'post_list' %}">← Назад</a>
+<form method="post" action="{% url 'toggle_active' post.pk %}">
+    {% csrf_token %}
 
-</body>
-</html>
+    {% if post.is_active %}
+        <button type="submit">Сделать Inactive</button>
+    {% else %}
+        <button type="submit">Сделать Active</button>
+    {% endif %}
+</form>

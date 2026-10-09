@@ -1,24 +1,19 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Посты</title>
-</head>
-<body>
-
-<h1>Активные посты</h1>
+<h1>Список постов</h1>
 
 {% for post in posts %}
-    <h2>
-        <a href="{% url 'post_detail' post.pk %}">
-            {{ post.title }}
-        </a>
-    </h2>
+    <div>
+        <h2>
+            <a href="{% url 'post_detail' post.pk %}">
+                {{ post.title }}
+            </a>
+        </h2>
 
-    <p>{{ post.description }}</p>
+        {% if post.is_active %}
+            <p>Статус: Active</p>
+        {% else %}
+            <p>Статус: Inactive</p>
+        {% endif %}
+    </div>
 {% empty %}
-    <p>Активных постов нет.</p>
+    <p>Пока нет постов.</p>
 {% endfor %}
-
-</body>
-</html>
