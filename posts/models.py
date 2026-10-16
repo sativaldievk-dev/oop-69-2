@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -14,6 +15,14 @@ class Category(models.Model):
 
 
 class Post(models.Model):
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="posts",
+        null=True,
+        blank=True,
+        verbose_name="Автор публикации",
+    )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,

@@ -1,4 +1,6 @@
-from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CategoryForm, PostForm, QuoteForm
 from .models import Post, Quote
@@ -14,7 +16,10 @@ def post_list(request):
         if kind == "post":
             post_form = PostForm(request.POST)
             if post_form.is_valid():
-                post_form.save()
+                post = post_form.save(commit=False)
+                if request.user.is_authenticated:
+                    post.created_by = request.user
+                post.save()
                 return redirect("post_list")
 
         elif kind == "quote":
@@ -49,7 +54,10 @@ def add_publication(request):
 
     if request.method == "POST":
         if form.is_valid():
-            form.save()
+            post = form.save(commit=False)
+            if request.user.is_authenticated:
+                post.created_by = request.user
+            post.save()
             return redirect("post_list")
 
     return render(request, "posts/add_publication.html", {"form": form})
@@ -201,4 +209,48 @@ def book_detail(request, slug):
         "previous": previous,
         "next": next_chapter,
         "slug": slug,
+    })
+
+
+@login_required
+def my_posts(request):
+    posts = (
+        Post.objects
+        .filter(created_by=request.user)
+        .select_related("category")
+        .order_by("-id")
+    )
+    return render(request, "posts/my_posts.html", {"posts": posts})
+
+
+@login_required
+def edit_post(request, pk):
+    post = get_object_or_404(Post, pk=pk, created_by=request.user)
+
+    if request.method == "POST":
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect("post_list")
+    else:
+        form = PostForm(instance=post)
+
+    return render(request, "posts/edit_post.html", {
+        "form": form,
+        "post": post,
+    })
+
+
+@login_required
+def delete_post(request, pk):
+    post = get_object_or_404(Post, pk=pk, created_by=request.user)
+
+    if request.method == "POST":
+        with transaction.atomic():
+            post.quotes.update(post=None)
+            post.delete()
+        return redirect("post_list")
+
+    return render(request, "posts/delete_post.html", {
+        "post": post,
     })

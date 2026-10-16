@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои посты</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 32px 18px;
+            font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+            color: white;
+            background: linear-gradient(135deg, #07172e, #124678);
+        }
+        main { max-width: 900px; margin: auto; }
+        h1 { text-align: center; margin: 18px 0 30px; }
+        .panel, article {
+            padding: 22px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,.3);
+            border-radius: 18px;
+            background: rgba(220,240,255,.12);
+        }
+        .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            border: 1px solid rgba(255,255,255,.45);
+            border-radius: 10px;
+            color: white;
+            background: rgba(255,255,255,.14);
+            text-decoration: none;
+        }
+        .button:hover { background: rgba(130,200,255,.3); }
+        .muted { color: rgba(255,255,255,.75); }
+        .meta { color: rgba(210,235,255,.82); font-size: 14px; }
+        .description { white-space: pre-wrap; overflow-wrap: anywhere; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>📝 Мои посты</h1>
+    <section class="panel">
+        <p>Публикации пользователя {{ request.user.username }}</p>
+        <a class="button" href="{% url 'post_list' %}">К публикациям</a>
+    </section>
+
+    {% for post in posts %}
+        <article>
+            <h2>{{ post.title }}</h2>
+            {% if post.category %}<p class="meta">Категория: {{ post.category.name }}</p>{% endif %}
+            {% if not post.is_active %}<p class="meta">Публикация скрыта</p>{% endif %}
+            <p class="description">{{ post.description }}</p>
+            <div class="actions">
+                <a class="button" href="{% url 'edit_post' post.pk %}">Редактировать</a>
+                <a class="button" href="{% url 'delete_post' post.pk %}">Удалить</a>
+            </div>
+        </article>
+    {% empty %}
+        <section class="panel">
+            <p class="muted">У вас пока нет публикаций.</p>
+            <a class="button" href="{% url 'add_publication' %}">Добавить публикацию</a>
+        </section>
+    {% endfor %}
+</main>
+</body>
+</html>

@@ -85,6 +85,9 @@ summary { cursor: pointer; margin-bottom: 12px; }
 
     <section class="panel">
         <h2>📝 Публикации</h2>
+        {% if user.is_authenticated %}
+            <p><a class="button" href="{% url 'my_posts' %}">Мои посты</a></p>
+        {% endif %}
         <p><a class="button" href="{% url 'add_category' %}">＋ Создать категорию</a></p>
         <details>
             <summary class="button">＋ Добавить публикацию</summary>
