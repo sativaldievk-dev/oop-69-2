@@ -1,19 +1,156 @@
-<h1>Список постов</h1>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winter Soul ❄️</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 35px 18px;
+    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    background-color: #07172e;
+    color: white;
+    background:
+        linear-gradient(135deg, rgba(5, 18, 43, .52), rgba(18, 70, 120, .48)),
+        url("/static/images/profile.jpg") center / cover fixed;
+}
+.container { max-width: 900px; margin: auto; }
+h1 { text-align: center; font-size: 38px; margin: 20px 0 35px; }
+h2 { margin-top: 0; }
+.panel {
+    padding: 24px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(220,240,255,.20), rgba(140,190,255,.08));
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 32px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.18);
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+    animation: rise .8s ease both;
+}
+button, .button {
+    display: inline-block;
+    padding: 11px 17px;
+    border: 1px solid rgba(255,255,255,.5);
+    border-radius: 12px;
+    background: rgba(255,255,255,.2);
+    color: white;
+    font-size: 15px;
+    text-decoration: none;
+    cursor: pointer;
+}
+input, textarea, select {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,.4);
+    border-radius: 10px;
+    background: rgba(255,255,255,.9);
+    color: #172033;
+    font: inherit;
+}
+textarea { min-height: 100px; resize: vertical; }
+label { display: block; margin-top: 12px; font-weight: 700; }
+.panel:hover { transform: translateY(-3px); border-color: rgba(180,225,255,.75); }
+.hero-title { text-shadow: 0 0 28px rgba(120,200,255,.65); animation: glow 3s ease-in-out infinite alternate; }
+.hero-title span { color: #9bdcff; }
+button, .button { transition: transform .2s ease, background .2s ease; }
+button:hover, .button:hover { transform: translateY(-2px); background: rgba(130,200,255,.3); }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes glow { from { text-shadow: 0 0 12px rgba(120,200,255,.3); } to { text-shadow: 0 0 30px rgba(120,200,255,.8); } }
+.entry {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.12);
+    overflow-wrap: anywhere;
+}
+.entry h3 { margin: 0 0 8px; }
+.muted { color: rgba(255,255,255,.75); }
+.meta { color: rgba(210,235,255,.82); font-size: 14px; margin: 6px 0 10px; }
+.quote-list { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.18); }
+.quote { margin: 8px 0; color: rgba(255,255,255,.86); font-size: 14px; }
+.errorlist { color: #ffd0d0; margin: 6px 0; padding-left: 18px; }
+details { margin-top: 15px; }
+summary { cursor: pointer; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<main class="container">
+    <h1 class="hero-title">❄️ Winter Soul <span>✦</span></h1>
 
-{% for post in posts %}
-    <div>
-        <h2>
-            <a href="{% url 'post_detail' post.pk %}">
-                {{ post.title }}
-            </a>
-        </h2>
+    <section class="panel">
+        <h2>📝 Публикации</h2>
+        <p><a class="button" href="{% url 'add_category' %}">＋ Создать категорию</a></p>
+        <details>
+            <summary class="button">＋ Добавить публикацию</summary>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="kind" value="post">
+                {% for field in post_form %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {{ field.errors }}
+                {% endfor %}
+                <button type="submit">Сохранить публикацию</button>
+            </form>
+        </details>
 
-        {% if post.is_active %}
-            <p>Статус: Active</p>
-        {% else %}
-            <p>Статус: Inactive</p>
-        {% endif %}
-    </div>
-{% empty %}
-    <p>Пока нет постов.</p>
-{% endfor %}
+        {% for post in posts %}
+        <article class="entry">
+            <h3>{{ post.title }}</h3>
+            {% if post.category %}
+                <p class="meta">Категория: {{ post.category.name }}</p>
+            {% endif %}
+            <p>{{ post.description|linebreaksbr }}</p>
+            <div class="quote-list">
+                <strong>Цитаты из публикации</strong>
+                {% for quote in post.quotes.all %}
+                    <p class="quote">«{{ quote.text }}»{% if quote.author %} — {{ quote.author }}{% endif %}</p>
+                {% empty %}
+                    <p class="muted">К этой публикации пока нет цитат.</p>
+                {% endfor %}
+            </div>
+        </article>
+        {% empty %}
+        <p class="muted">Публикаций пока нет. Добавь первую!</p>
+        {% endfor %}
+    </section>
+
+    <section class="panel">
+        <h2>💬 Цитаты</h2>
+        <details>
+            <summary class="button">＋ Добавить цитату</summary>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="kind" value="quote">
+                {% for field in quote_form %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {{ field.errors }}
+                {% endfor %}
+                <button type="submit">Сохранить цитату</button>
+            </form>
+        </details>
+
+        {% for quote in quotes %}
+        <article class="entry">
+            <p>«{{ quote.text }}»</p>
+            {% if quote.author %}
+                <p class="meta">Автор: {{ quote.author }}</p>
+            {% endif %}
+            {% if quote.post %}
+                <p class="meta">Связана с публикацией: {{ quote.post.title }}</p>
+            {% endif %}
+        </article>
+        {% empty %}
+        <p class="muted">Цитат пока нет. Добавь первую!</p>
+        {% endfor %}
+    </section>
+</main>
+</body>
+</html>

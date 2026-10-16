@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-u$a4&eksq&%(4=nh@qf$iiwi^^%$o4b)v#-%f31s8tlpa02(!f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "172.20.10.3"]
 
 
 # Application definition
@@ -37,9 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'posts',
     'catalog',
+    'tasks',
 ]
 
 
@@ -129,3 +129,5 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
